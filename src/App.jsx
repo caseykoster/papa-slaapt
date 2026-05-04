@@ -203,9 +203,6 @@ export default function App() {
           <div className="overlay-card" onClick={e => e.stopPropagation()}>
             <AngryDaddy />
             <h2 className="busted-title">DADDY WOKE UP!</h2>
-            <p className="busted-sub">
-              You survived <strong>{pressCount}</strong> press{pressCount !== 1 ? 'es' : ''}
-            </p>
             <button className="play-again-btn" onClick={handleReset}>
               Try Again
             </button>
