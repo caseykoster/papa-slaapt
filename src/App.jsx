@@ -204,7 +204,7 @@ export default function App() {
             <AngryDaddy />
             <h2 className="busted-title">DADDY WOKE UP!</h2>
             <button className="play-again-btn" onClick={handleReset}>
-              Try Again
+              Go Back to Sleep
             </button>
           </div>
         </div>
