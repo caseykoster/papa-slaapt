@@ -3,6 +3,38 @@ import './App.css'
 
 const WAKE_PROBABILITY = 1 / 6
 
+function playAlarm() {
+  const ctx = new (window.AudioContext || window.webkitAudioContext)()
+
+  // Distortion curve for a harsh, clipped buzzer
+  const curve = new Float32Array(256)
+  for (let i = 0; i < 256; i++) {
+    const x = (i * 2) / 256 - 1
+    curve[i] = Math.sign(x) * (1 - Math.exp(-Math.abs(x) * 12))
+  }
+  const distortion = ctx.createWaveShaper()
+  distortion.curve = curve
+  distortion.connect(ctx.destination)
+
+  const gain = ctx.createGain()
+  gain.connect(distortion)
+
+  // Two slightly detuned sawtooth oscillators for an ugly, angry buzz
+  ;[120, 127].forEach(freq => {
+    const osc = ctx.createOscillator()
+    osc.type = 'sawtooth'
+    osc.frequency.setValueAtTime(freq, ctx.currentTime)
+    osc.connect(gain)
+    osc.start(ctx.currentTime)
+    osc.stop(ctx.currentTime + 0.9)
+  })
+
+  gain.gain.setValueAtTime(0, ctx.currentTime)
+  gain.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.01)
+  gain.gain.setValueAtTime(0.6, ctx.currentTime + 0.75)
+  gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.9)
+}
+
 function SleepingDaddy({ jiggle }) {
   return (
     <svg
@@ -100,7 +132,6 @@ function Stars() {
 export default function App() {
   const [pressCount, setPressCount] = useState(0)
   const [isWoken, setIsWoken] = useState(false)
-  const [bestScore, setBestScore] = useState(0)
   const [jiggle, setJiggle] = useState(false)
   const [pressing, setPressing] = useState(false)
 
@@ -109,7 +140,7 @@ export default function App() {
 
     if (Math.random() < WAKE_PROBABILITY) {
       setIsWoken(true)
-      setBestScore(prev => Math.max(prev, pressCount))
+      playAlarm()
     } else {
       setPressCount(prev => prev + 1)
       setJiggle(true)
@@ -149,17 +180,6 @@ export default function App() {
           <SleepingDaddy jiggle={jiggle} />
         </div>
 
-        <div className="score-row">
-          <div className="score-box">
-            <span className="score-label">Presses</span>
-            <span className="score-value">{pressCount}</span>
-          </div>
-          <div className="score-box">
-            <span className="score-label">Best</span>
-            <span className="score-value">{bestScore}</span>
-          </div>
-        </div>
-
         <button
           className={`alarm-btn${pressing ? ' pressed' : ''}`}
           onClick={handlePress}
@@ -186,9 +206,6 @@ export default function App() {
             <p className="busted-sub">
               You survived <strong>{pressCount}</strong> press{pressCount !== 1 ? 'es' : ''}
             </p>
-            {pressCount >= bestScore && pressCount > 0 && (
-              <p className="new-best">🏆 New best!</p>
-            )}
             <button className="play-again-btn" onClick={handleReset}>
               Try Again
             </button>
