@@ -1,0 +1,300 @@
+/* ── Layout ─────────────────────────────────────────── */
+
+.game-root {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(160deg, #0f0c29 0%, #1e1b4b 50%, #0f0c29 100%);
+  overflow: hidden;
+  padding: 24px 16px;
+  box-sizing: border-box;
+  gap: 0;
+}
+
+/* ── Stars ──────────────────────────────────────────── */
+
+.stars-bg {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── Header ─────────────────────────────────────────── */
+
+.game-header {
+  position: relative;
+  z-index: 1;
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.game-title {
+  font-size: clamp(1.8rem, 6vw, 3rem);
+  font-weight: 700;
+  color: #f0e6d3;
+  letter-spacing: 2px;
+  margin: 0 0 8px;
+  text-shadow:
+    0 0 30px rgba(192, 132, 252, 0.7),
+    0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.game-subtitle {
+  color: #94a3b8;
+  font-size: 0.95rem;
+  margin: 0;
+  font-style: italic;
+}
+
+/* ── Main ───────────────────────────────────────────── */
+
+.game-main {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+/* ── Daddy SVG ──────────────────────────────────────── */
+
+.daddy-stage {
+  width: 220px;
+  height: 240px;
+  filter: drop-shadow(0 8px 24px rgba(0, 0, 0, 0.6));
+}
+
+.daddy-svg {
+  width: 100%;
+  height: 100%;
+  transform-origin: center bottom;
+}
+
+.daddy-svg.jiggle {
+  animation: jiggle 0.35s ease;
+}
+
+@keyframes jiggle {
+  0%   { transform: rotate(0deg) translateX(0); }
+  20%  { transform: rotate(-4deg) translateX(-6px); }
+  40%  { transform: rotate(3deg) translateX(5px); }
+  60%  { transform: rotate(-2deg) translateX(-3px); }
+  80%  { transform: rotate(1deg) translateX(2px); }
+  100% { transform: rotate(0deg) translateX(0); }
+}
+
+/* ── Score row ──────────────────────────────────────── */
+
+.score-row {
+  display: flex;
+  gap: 20px;
+}
+
+.score-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 10px 24px;
+  min-width: 80px;
+}
+
+.score-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: #64748b;
+}
+
+.score-value {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #c084fc;
+  line-height: 1.2;
+}
+
+/* ── Alarm button ───────────────────────────────────── */
+
+.alarm-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  border: 5px solid #fca5a5;
+  background: radial-gradient(circle at 40% 35%, #f87171, #dc2626 60%, #991b1b);
+  cursor: pointer;
+  color: white;
+  box-shadow:
+    0 0 40px rgba(239, 68, 68, 0.55),
+    0 0 80px rgba(239, 68, 68, 0.2),
+    inset 0 3px 6px rgba(255, 255, 255, 0.25);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.alarm-btn:hover:not(:disabled) {
+  box-shadow:
+    0 0 55px rgba(239, 68, 68, 0.7),
+    0 0 100px rgba(239, 68, 68, 0.3),
+    inset 0 3px 6px rgba(255, 255, 255, 0.25);
+}
+
+.alarm-btn.pressed,
+.alarm-btn:active:not(:disabled) {
+  transform: scale(0.91);
+  box-shadow:
+    0 0 20px rgba(239, 68, 68, 0.4),
+    inset 0 3px 8px rgba(0, 0, 0, 0.3);
+}
+
+.alarm-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.alarm-icon {
+  font-size: 3rem;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.alarm-label {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  font-weight: 600;
+  pointer-events: none;
+}
+
+/* ── Hint ───────────────────────────────────────────── */
+
+.hint-text {
+  color: #475569;
+  font-size: 0.78rem;
+  margin: -8px 0 0;
+}
+
+/* ── Overlay ────────────────────────────────────────── */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.0);
+  animation: overlayIn 0.12s ease forwards;
+  cursor: pointer;
+}
+
+@keyframes overlayIn {
+  0%   { background: rgba(185, 28, 28, 0.75); }
+  40%  { background: rgba(0, 0, 0, 0.82); }
+  100% { background: rgba(0, 0, 0, 0.82); }
+}
+
+.overlay-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  cursor: default;
+  animation: popIn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+  padding: 8px;
+}
+
+@keyframes popIn {
+  0%   { transform: scale(0.2) rotate(-15deg); opacity: 0; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* ── Angry daddy ────────────────────────────────────── */
+
+.angry-daddy-svg {
+  width: 200px;
+  height: 200px;
+  filter: drop-shadow(0 0 30px rgba(239, 68, 68, 0.9));
+  animation: angryShake 0.35s ease infinite;
+}
+
+@keyframes angryShake {
+  0%   { transform: rotate(0deg); }
+  25%  { transform: rotate(-6deg) scale(1.03); }
+  75%  { transform: rotate(6deg) scale(1.03); }
+  100% { transform: rotate(0deg); }
+}
+
+/* ── Busted text ────────────────────────────────────── */
+
+.busted-title {
+  font-size: clamp(2rem, 8vw, 3.5rem);
+  font-weight: 900;
+  color: #ef4444;
+  margin: 12px 0 8px;
+  text-shadow:
+    0 0 20px rgba(239, 68, 68, 1),
+    0 0 50px rgba(239, 68, 68, 0.6);
+  animation: bustedPulse 0.5s ease infinite alternate;
+}
+
+@keyframes bustedPulse {
+  from { transform: scale(1); }
+  to   { transform: scale(1.06); }
+}
+
+.busted-sub {
+  color: #e2e8f0;
+  font-size: 1.1rem;
+  margin: 0 0 6px;
+}
+
+.busted-sub strong {
+  color: #c084fc;
+}
+
+.new-best {
+  color: #fbbf24;
+  font-size: 1rem;
+  margin: 0 0 8px;
+  font-weight: 600;
+}
+
+/* ── Play again ─────────────────────────────────────── */
+
+.play-again-btn {
+  margin-top: 16px;
+  background: #7c3aed;
+  color: white;
+  border: none;
+  padding: 13px 36px;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  font-weight: 600;
+  cursor: pointer;
+  letter-spacing: 0.5px;
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.5);
+  transition: background 0.15s, transform 0.1s;
+}
+
+.play-again-btn:hover {
+  background: #6d28d9;
+}
+
+.play-again-btn:active {
+  transform: scale(0.96);
+}
