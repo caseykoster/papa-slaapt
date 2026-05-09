@@ -6,33 +6,25 @@ const WAKE_PROBABILITY = 1 / 6
 function playAlarm() {
   const ctx = new (window.AudioContext || window.webkitAudioContext)()
 
-  // Distortion curve for a harsh, clipped buzzer
-  const curve = new Float32Array(256)
-  for (let i = 0; i < 256; i++) {
-    const x = (i * 2) / 256 - 1
-    curve[i] = Math.sign(x) * (1 - Math.exp(-Math.abs(x) * 12))
-  }
-  const distortion = ctx.createWaveShaper()
-  distortion.curve = curve
-  distortion.connect(ctx.destination)
-
-  const gain = ctx.createGain()
-  gain.connect(distortion)
-
-  // Two slightly detuned sawtooth oscillators for an ugly, angry buzz
-  ;[120, 127].forEach(freq => {
+  // Classic alarm clock: alternating two-tone rings
+  const rings = [0, 0.22, 0.44, 0.66]
+  rings.forEach((startOffset, i) => {
     const osc = ctx.createOscillator()
-    osc.type = 'sawtooth'
-    osc.frequency.setValueAtTime(freq, ctx.currentTime)
+    const gain = ctx.createGain()
     osc.connect(gain)
-    osc.start(ctx.currentTime)
-    osc.stop(ctx.currentTime + 0.9)
-  })
+    gain.connect(ctx.destination)
 
-  gain.gain.setValueAtTime(0, ctx.currentTime)
-  gain.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.01)
-  gain.gain.setValueAtTime(0.6, ctx.currentTime + 0.75)
-  gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.9)
+    osc.type = 'sine'
+    osc.frequency.setValueAtTime(i % 2 === 0 ? 800 : 640, ctx.currentTime + startOffset)
+
+    gain.gain.setValueAtTime(0, ctx.currentTime + startOffset)
+    gain.gain.linearRampToValueAtTime(0.35, ctx.currentTime + startOffset + 0.01)
+    gain.gain.setValueAtTime(0.35, ctx.currentTime + startOffset + 0.16)
+    gain.gain.linearRampToValueAtTime(0, ctx.currentTime + startOffset + 0.2)
+
+    osc.start(ctx.currentTime + startOffset)
+    osc.stop(ctx.currentTime + startOffset + 0.22)
+  })
 }
 
 function SleepingDaddy({ jiggle }) {
