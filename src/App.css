@@ -181,6 +181,13 @@
   pointer-events: none;
 }
 
+.alarm-count {
+  font-size: 1.8rem;
+  font-weight: 700;
+  pointer-events: none;
+  line-height: 1;
+}
+
 /* ── Hint ───────────────────────────────────────────── */
 
 .hint-text {

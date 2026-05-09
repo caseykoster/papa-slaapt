@@ -218,7 +218,10 @@ export default function App() {
           aria-label="Press the alarm clock"
         >
           <span className="alarm-icon">🔔</span>
-          <span className="alarm-label">Press the Alarm</span>
+          {pressCount > 0
+            ? <span className="alarm-count">{pressCount}</span>
+            : <span className="alarm-label">Press the Alarm</span>
+          }
         </button>
 
         <p className="hint-text">Space / Enter works too</p>
