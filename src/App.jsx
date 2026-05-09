@@ -1,9 +1,9 @@
 import { useState, useCallback, useEffect } from 'react'
 import './App.css'
 
-const WAKE_PROBABILITY = 1 / 6
+const SEQUENCE = [6, 11, 20, 8, 14, 10, 20]
 
-function playAlarm() {
+function playNiceAlarm() {
   const ctx = new (window.AudioContext || window.webkitAudioContext)()
 
   // Classic alarm clock: alternating two-tone rings
@@ -25,6 +25,37 @@ function playAlarm() {
     osc.start(ctx.currentTime + startOffset)
     osc.stop(ctx.currentTime + startOffset + 0.22)
   })
+}
+
+function playMeanAlarm() {
+  const ctx = new (window.AudioContext || window.webkitAudioContext)()
+
+  // Distortion curve for a harsh, clipped buzzer
+  const curve = new Float32Array(256)
+  for (let i = 0; i < 256; i++) {
+    const x = (i * 2) / 256 - 1
+    curve[i] = Math.sign(x) * (1 - Math.exp(-Math.abs(x) * 12))
+  }
+  const distortion = ctx.createWaveShaper()
+  distortion.curve = curve
+  distortion.connect(ctx.destination)
+
+  const gain = ctx.createGain()
+  gain.connect(distortion)
+
+  ;[120, 127].forEach(freq => {
+    const osc = ctx.createOscillator()
+    osc.type = 'sawtooth'
+    osc.frequency.setValueAtTime(freq, ctx.currentTime)
+    osc.connect(gain)
+    osc.start(ctx.currentTime)
+    osc.stop(ctx.currentTime + 0.9)
+  })
+
+  gain.gain.setValueAtTime(0, ctx.currentTime)
+  gain.gain.linearRampToValueAtTime(0.6, ctx.currentTime + 0.01)
+  gain.gain.setValueAtTime(0.6, ctx.currentTime + 0.75)
+  gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.9)
 }
 
 function SleepingDaddy({ jiggle }) {
@@ -126,19 +157,22 @@ export default function App() {
   const [isWoken, setIsWoken] = useState(false)
   const [jiggle, setJiggle] = useState(false)
   const [pressing, setPressing] = useState(false)
+  const [meanDaddy, setMeanDaddy] = useState(false)
+  const [seqIndex, setSeqIndex] = useState(() => Math.floor(Math.random() * SEQUENCE.length))
 
   const handlePress = useCallback(() => {
     if (isWoken || jiggle) return
 
-    if (Math.random() < WAKE_PROBABILITY) {
+    if (pressCount + 1 >= SEQUENCE[seqIndex]) {
       setIsWoken(true)
-      playAlarm()
+      setSeqIndex(prev => (prev + 1) % SEQUENCE.length)
+      meanDaddy ? playMeanAlarm() : playNiceAlarm()
     } else {
       setPressCount(prev => prev + 1)
       setJiggle(true)
       setTimeout(() => setJiggle(false), 350)
     }
-  }, [isWoken, jiggle, pressCount])
+  }, [isWoken, jiggle, pressCount, meanDaddy, seqIndex])
 
   const handleReset = useCallback(() => {
     setIsWoken(false)
@@ -188,6 +222,14 @@ export default function App() {
         </button>
 
         <p className="hint-text">Space / Enter works too</p>
+
+        <button
+          className={`mode-toggle ${meanDaddy ? 'mean' : 'nice'}`}
+          onClick={() => setMeanDaddy(prev => !prev)}
+          aria-label="Toggle daddy mode"
+        >
+          {meanDaddy ? '😈 Mean Daddy' : '😇 Nice Daddy'}
+        </button>
       </main>
 
       {isWoken && (

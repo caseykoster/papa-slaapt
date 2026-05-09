@@ -189,6 +189,35 @@
   margin: -8px 0 0;
 }
 
+/* ── Mode toggle ────────────────────────────────────── */
+
+.mode-toggle {
+  margin-top: 4px;
+  padding: 8px 20px;
+  border-radius: 20px;
+  border: 2px solid;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  letter-spacing: 0.3px;
+
+  &.nice {
+    background: rgba(134, 239, 172, 0.1);
+    border-color: #86efac;
+    color: #86efac;
+  }
+
+  &.mean {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: #ef4444;
+    color: #ef4444;
+  }
+
+  &:hover { opacity: 0.85; }
+  &:active { transform: scale(0.96); }
+}
+
 /* ── Overlay ────────────────────────────────────────── */
 
 .overlay {
